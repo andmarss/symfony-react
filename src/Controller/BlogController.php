@@ -38,7 +38,7 @@ class BlogController extends AbstractController
      */
     public function list(int $page): JsonResponse
     {
-        return new JsonResponse([
+        return $this->json([
             'page' => $page,
             'data' => array_map(function (array $post){
                 return $this->generateUrl('blog_by_id', [
@@ -55,7 +55,7 @@ class BlogController extends AbstractController
      */
     public function post(int $id): JsonResponse
     {
-        return new JsonResponse(static::POSTS[array_search($id, array_column(static::POSTS, 'id'))]);
+        return $this->json(static::POSTS[array_search($id, array_column(static::POSTS, 'id'))]);
     }
 
     /**
@@ -65,6 +65,6 @@ class BlogController extends AbstractController
      */
     public function postBySlug(string $slug): JsonResponse
     {
-        return new JsonResponse(static::POSTS[array_search($slug, array_column(static::POSTS, 'slug'))]);
+        return $this->json(static::POSTS[array_search($slug, array_column(static::POSTS, 'slug'))]);
     }
 }
