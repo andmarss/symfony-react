@@ -16,24 +16,6 @@ use Symfony\Component\Serializer\Serializer;
  */
 class BlogController extends AbstractController
 {
-    private const POSTS = [
-        [
-            'id'    => 1,
-            'slug'  => 'hello-world',
-            'title' => 'Hello world!'
-        ],
-        [
-            'id'    => 2,
-            'slug'  => 'another-post',
-            'title' => 'This is another post'
-        ],
-        [
-            'id'    => 3,
-            'slug'  => 'last-example',
-            'title' => 'This is the last example'
-        ]
-    ];
-
     /**
      * @Route("/{page}", name="blog_list", defaults={"page": 5}, requirements={"page" = "\d+"})
      * @param string $page
@@ -41,13 +23,16 @@ class BlogController extends AbstractController
      */
     public function list(string $page): JsonResponse
     {
+        $repository = $this->getDoctrine()->getRepository(BlogPost::class);
+        $posts = $repository->findAll();
+
         return $this->json([
             'page' => $page,
-            'data' => array_map(function (array $post){
+            'data' => array_map(function (BlogPost $post){
                 return $this->generateUrl('blog_by_slug', [
-                    'slug' => $post['slug']
+                    'slug' => $post->getSlug()
                 ]);
-            }, static::POSTS)
+            }, $posts)
         ]);
     }
 
@@ -58,7 +43,9 @@ class BlogController extends AbstractController
      */
     public function post(int $id): JsonResponse
     {
-        return $this->json(static::POSTS[array_search($id, array_column(static::POSTS, 'id'))]);
+        return $this->json(
+            $this->getDoctrine()->getRepository(BlogPost::class)->find($id)
+        );
     }
 
     /**
@@ -68,7 +55,11 @@ class BlogController extends AbstractController
      */
     public function postBySlug(string $slug): JsonResponse
     {
-        return $this->json(static::POSTS[array_search($slug, array_column(static::POSTS, 'slug'))]);
+        return $this->json(
+            $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy([
+                'slug' => $slug
+            ])
+        );
     }
 
     /**
