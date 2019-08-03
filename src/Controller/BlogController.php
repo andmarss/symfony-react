@@ -5,6 +5,7 @@ namespace App\Controller;
 
 
 use App\Entity\BlogPost;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,27 +39,30 @@ class BlogController extends AbstractController
 
     /**
      * @Route("/post/{id}", name="blog_by_id", requirements={"id"="\d+"})
-     * @param int $id
+     * @ParamConverter("post", class="App:BlogPost")
+     * @param BlogPost $post
      * @return JsonResponse
      */
-    public function post(int $id): JsonResponse
+    public function post($post): JsonResponse
     {
+        // it's do the same as find($id) on repository
         return $this->json(
-            $this->getDoctrine()->getRepository(BlogPost::class)->find($id)
+            $post
         );
     }
 
     /**
      * @Route("/post/{slug}", name="blog_by_slug")
-     * @param string $slug
+     * Параметр class в ParamConverter не обязателен, если указан класс в typehinting'е
+     * @ParamConverter("post", options={"mapping": {"slug": "slug"}})
+     * @param BlogPost $post
      * @return JsonResponse
      */
-    public function postBySlug(string $slug): JsonResponse
+    public function postBySlug(BlogPost $post): JsonResponse
     {
+        // it's do the same as findOneBy(['slug' => $slug]) on repository
         return $this->json(
-            $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy([
-                'slug' => $slug
-            ])
+            $post
         );
     }
 
