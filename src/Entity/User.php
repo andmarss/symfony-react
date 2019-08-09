@@ -40,6 +40,10 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
+     * @Assert\Regex(
+     *     pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
+     *     message="Пароль должен быть длиной в семь символов, и содержать одно целое число, одну букву в нижнем и одну - в верхнем регистре"
+     * )
      */
     private $password;
 
