@@ -3,10 +3,12 @@
 namespace App\DataFixtures;
 
 use App\Entity\BlogPost;
+use App\Entity\Comment;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Faker\{Generator, Factory};
 
 class AppFixtures extends Fixture
 {
@@ -14,11 +16,16 @@ class AppFixtures extends Fixture
      * @var UserPasswordEncoderInterface
      */
     private $passwordEncoder;
+    /**
+     * @var Generator $faker
+     */
+    private $faker;
 
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
-
         $this->passwordEncoder = $passwordEncoder;
+
+        $this->faker = Factory::create();
     }
 
     public function load(ObjectManager $manager)
@@ -26,6 +33,8 @@ class AppFixtures extends Fixture
         $this->loadUsers($manager);
 
         $this->loadPosts($manager);
+
+        $this->loadComment($manager);
     }
 
     public function loadPosts(ObjectManager $manager)
@@ -35,36 +44,47 @@ class AppFixtures extends Fixture
          */
         $user = $this->getReference('user_admin');
 
-        /**
-         * @var BlogPost $blogPost
-         */
-        $blogPost = new BlogPost();
-        $blogPost->setTitle('A first fixture post!');
-        $blogPost->setPublished(new \DateTime('2019-08-07 12:00:00'));
-        $blogPost->setContent('Post text');
-        $blogPost->setAuthor($user);
-        $blogPost->setSlug('a-first-post');
+        for ($i = 0; $i < 10; $i++) {
+            /**
+             * @var BlogPost $blogPost
+             */
+            $blogPost = new BlogPost();
+            $blogPost->setTitle($this->faker->realText(30));
+            $blogPost->setPublished($this->faker->dateTimeThisYear);
+            $blogPost->setContent($this->faker->realText());
+            $blogPost->setAuthor($user);
+            $blogPost->setSlug($this->faker->slug);
 
-        $manager->persist($blogPost);
+            $this->setReference("blog_post_$i", $blogPost);
 
-        /**
-         * @var BlogPost $blogPost
-         */
-        $blogPost = new BlogPost();
-        $blogPost->setTitle('A second fixture post!');
-        $blogPost->setPublished(new \DateTime('2019-08-07 13:00:00'));
-        $blogPost->setContent('Second post text');
-        $blogPost->setAuthor($user);
-        $blogPost->setSlug('a-second-post');
-
-        $manager->persist($blogPost);
+            $manager->persist($blogPost);
+        }
 
         $manager->flush();
     }
 
     public function loadComment(ObjectManager $manager)
     {
+        /**
+         * @var User $user
+         */
+        $user = $this->getReference('user_admin');
 
+        for ($i = 0; $i < 10; $i++) {
+            for($j = 0; $j < rand(1, 10); $j++) {
+                /**
+                 * @var Comment $comment
+                 */
+                $comment = new Comment();
+                $comment->setContent($this->faker->realText());
+                $comment->setPublished($this->faker->dateTimeThisYear);
+                $comment->setAuthor($user);
+
+                $manager->persist($comment);
+            }
+        }
+
+        $manager->flush();
     }
 
     public function loadUsers(ObjectManager $manager)
