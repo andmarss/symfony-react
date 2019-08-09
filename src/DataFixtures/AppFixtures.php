@@ -71,6 +71,11 @@ class AppFixtures extends Fixture
         $user = $this->getReference('user_admin');
 
         for ($i = 0; $i < 10; $i++) {
+            /**
+             * @var BlogPost $post
+             */
+            $post = $this->getReference("blog_post_$i");
+
             for($j = 0; $j < rand(1, 10); $j++) {
                 /**
                  * @var Comment $comment
@@ -79,6 +84,7 @@ class AppFixtures extends Fixture
                 $comment->setContent($this->faker->realText());
                 $comment->setPublished($this->faker->dateTimeThisYear);
                 $comment->setAuthor($user);
+                $comment->setPost($post);
 
                 $manager->persist($comment);
             }

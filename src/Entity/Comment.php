@@ -30,6 +30,30 @@ class Comment
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $post;
+
+    /**
+     * @return BlogPost
+     */
+    public function getPost(): BlogPost
+    {
+        return $this->post;
+    }
+
+    /**
+     * @param BlogPost $post
+     * @return Comment
+     */
+    public function setPost(BlogPost $post): self
+    {
+        $this->post = $post;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {
