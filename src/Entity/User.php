@@ -14,7 +14,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ApiResource(
- *     itemOperations={"get"},
+ *     itemOperations={
+ *          "get"={
+ *              "access_control"="is_granted('IS_AUTHANTICATED_FULLY')"
+ *          }
+ *     },
  *     collectionOperations={"post"},
  *     normalizationContext={
  *          "groups"={"read"}
