@@ -19,8 +19,10 @@ security:
             json_login:
                 # тут будет происходить аутентификация (генерация токена)
                 check_path: /api//login_check
-                success_handle: lexik_jwt_authentication.handler.authentication_success
-                failure_handle: lexik_jwt_authentication.handler.authentication_failure
+                # обрабатывает успешную аутентификацию
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                # обрабатывает ошибку аунтинтификации (не верные учетные данные, отсутствие учетных данных и т.д.)
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
